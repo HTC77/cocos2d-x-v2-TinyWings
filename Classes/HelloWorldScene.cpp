@@ -30,7 +30,11 @@ bool HelloWorld::init()
 	visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 
 	_background = new CCSprite();
+
 	this->genBackground();
+	
+	terrain = Terrain::createTerrain();
+	this->addChild(terrain);
     return true;
 }
 
@@ -50,19 +54,16 @@ void HelloWorld::menuCloseCallback(CCObject* pSender)
 void HelloWorld::genBackground()
 {
 	_background->removeFromParentAndCleanup(true);
+
 	ccColor4F bgColor = this->randomBrightColor();
-	ccColor4F bgcolor2 = this->randomBrightColor();
 
 	int stripes = (rand() % 4 + 1) * 2;
 	_background = this->spriteWithColor(bgColor, 512, 512);
-	//_background = this->spriteWithColor(bgColor, bgcolor2, 512, 512, stripes);
 	_background->setPosition(visibleSize / 2);
 
 	cocos2d::ccTexParams tp = { GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT };
 	_background->getTexture()->setTexParameters(&tp);
-	//_background->setRotation(90);
 	this->addChild(_background);
-	this->setScale(0.6);
 }
 
 ccColor4F HelloWorld::randomBrightColor()
@@ -130,7 +131,7 @@ CCSprite* HelloWorld::spriteWithColor(ccColor4F bgColor, float textureWidth, flo
 	return CCSprite::createWithTexture(rt->getSprite()->getTexture());
 }
 
-CCSprite* HelloWorld::spriteWithColor(ccColor4F bgColor, ccColor4F bgColor2, float textureWidth, float textureHeight,
+CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F bgColor, ccColor4F bgColor2, float textureWidth, float textureHeight,
 	int nStripes)
 {
 	// 1. create render texture

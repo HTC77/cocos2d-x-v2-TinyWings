@@ -2,6 +2,7 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
+#include "Terrain.h"
 USING_NS_CC;
 class HelloWorld : public cocos2d::CCLayer
 {
@@ -22,7 +23,10 @@ public:
 	void genBackground();
 	ccColor4F randomBrightColor();
 	CCSprite* spriteWithColor(ccColor4F bgColor, float textureWidth, float textureHeight);
-	CCSprite* spriteWithColor(ccColor4F bgColor, ccColor4F bgColor2, float textureWidth, float textureHeight, int nStripes);
+	CCSprite* stripedSpriteWithColor(ccColor4F bgColor, ccColor4F bgColor2, float textureWidth, float textureHeight, int nStripes);
+
+	//adding hill
+	Terrain* terrain;
 
 };
 
