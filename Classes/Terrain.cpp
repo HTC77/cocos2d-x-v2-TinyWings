@@ -30,8 +30,13 @@ void Terrain::setOffsetX(float newOffsetX)
 	this->resetHillVertices();
 }
 
+
 void Terrain::resetHillVertices()
 {
+	
+	static int prevFromKeyPointI = -1;
+	static int prevToKeyPointI = -1;
+
 	// key points interval for drawing
 	while (_hillKeyPoints[_fromKeyPointI + 1].x < _offsetX - winSize.width / 8 / this->getScale())
 	{
@@ -41,40 +46,67 @@ void Terrain::resetHillVertices()
 	{
 		_toKeyPointI++;
 	}
+
+	//for hills                              ***********
+	float minY = 0;
+	if (winSize.height > 480) {
+		minY = (1136 - 1024) / 4;
+	}
+	if (prevFromKeyPointI != _fromKeyPointI || prevToKeyPointI != _toKeyPointI) {
+
+		// vertices for visible area
+		_nHillVertices = 0;
+		_nBorderVertices = 0;
+		CCPoint p0, p1, pt0, pt1;
+		p0 = _hillKeyPoints[_fromKeyPointI];
+		for (int i = _fromKeyPointI + 1; i < _toKeyPointI + 1; i++) {
+			p1 = _hillKeyPoints[i];
+
+			// triangle strip between p0 and p1
+			int hSegments = floorf((p1.x - p0.x) / kHillSegmentWidth);
+			float dx = (p1.x - p0.x) / hSegments;
+			float da = M_PI / hSegments;
+			float ymid = (p0.y + p1.y) / 2;
+			float ampl = (p0.y - p1.y) / 2;
+			pt0 = p0;
+			_borderVertices[_nBorderVertices++] = pt0;
+			for (int j = 1; j<hSegments + 1; j++) {
+				pt1.x = p0.x + j*dx;
+				pt1.y = ymid + ampl * cosf(da*j);
+				_borderVertices[_nBorderVertices++] = pt1;
+
+				_hillVertices[_nHillVertices] = CCPointMake(pt0.x, 0 + minY);
+				_hillTexCoords[_nHillVertices++] = CCPointMake(pt0.x / 512, 1.0f);
+				_hillVertices[_nHillVertices] = CCPointMake(pt1.x, 0 + minY);
+				_hillTexCoords[_nHillVertices++] = CCPointMake(pt1.x / 512, 1.0f);
+
+				_hillVertices[_nHillVertices] = CCPointMake(pt0.x, pt0.y);
+				_hillTexCoords[_nHillVertices++] = CCPointMake(pt0.x / 512, 0);
+				_hillVertices[_nHillVertices] = CCPointMake(pt1.x, pt1.y);
+				_hillTexCoords[_nHillVertices++] = CCPointMake(pt1.x / 512, 0);
+
+				pt0 = pt1;
+			}
+
+			p0 = p1;
+		}
+
+		prevFromKeyPointI = _fromKeyPointI;
+		prevToKeyPointI = _toKeyPointI;
+	}
 }
 
 void Terrain::draw()
 {
-	this->setShaderProgram(CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTexture));
-
 	CC_NODE_DRAW_SETUP();
-	for (int i = MAX(_fromKeyPointI, 1); i <= _toKeyPointI; ++i) {
-		ccDrawColor4F(1.0, 0, 0, 1.0);
-		ccDrawLine(_hillKeyPoints[i - 1], _hillKeyPoints[i]);   //# 1 - real line (RED LINE)
+	ccGLBindTexture2D(_stripes->getTexture()->getName());
+	ccGLEnableVertexAttribs(kCCVertexAttribFlag_Position | kCCVertexAttribFlag_TexCoords);
 
-		// Smooth Slopes
-		ccDrawColor4F(1.0, 1.0, 1.0, 1.0);
-		CCPoint p0 = _hillKeyPoints[i - 1];
-		CCPoint p1 = _hillKeyPoints[i];
-		int hSegments = floorf((p1.x - p0.x) / kHillSegmentWidth);
-		float dx = (p1.x - p0.x) / hSegments;
-		float da = M_PI / hSegments;
-		float ymid = (p0.y + p1.y) / 2;
-		float ampl = (p0.y - p1.y) / 2;
+	ccDrawColor4F(1.0f, 1.0f, 1.0f, 1.0f);
+	glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, _hillVertices);
+	glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_TRUE, 0, _hillTexCoords);
 
-		CCPoint pt0, pt1;
-		pt0 = p0;
-		for (int j = 0; j < hSegments + 1; ++j) {
-
-			pt1.x = p0.x + j*dx;
-			pt1.y = ymid + ampl * cosf(da*j);
-
-			ccDrawLine(pt0, pt1);  //# 2 - smooth line (WHITE LINE)
-
-			pt0 = pt1;
-
-		}
-	}
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)_nHillVertices);
 }
 
 void Terrain::generateHills()
@@ -124,8 +156,14 @@ bool Terrain::init()
 	_fromKeyPointI = 0;
 	_toKeyPointI = 0;
 	_offsetX = 0;
+	_nHillVertices = 0;
+	_nBorderVertices = 0;
+
 	winSize = CCDirector::sharedDirector()->getWinSize();
 	this->generateHills();
+
+	this->setShaderProgram(CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTexture));
 	this->resetHillVertices();
+
 	return true;
 }

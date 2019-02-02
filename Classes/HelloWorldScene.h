@@ -20,11 +20,13 @@ public:
     CREATE_FUNC(HelloWorld);
 
 	CCSprite* _background;
+	CCSprite* _stripes;
 	void genBackground();
 	ccColor4F randomBrightColor();
 	CCSprite* spriteWithColor(ccColor4F bgColor, float textureWidth, float textureHeight);
-	CCSprite* stripedSpriteWithColor(ccColor4F bgColor, ccColor4F bgColor2, float textureWidth, float textureHeight, int nStripes);
+	CCSprite* stripedSpriteWithColor(ccColor4F color1, ccColor4F color2, float textureWidth, float textureHeight, int nStripes);
 
+	void ccTouchesBegan(CCSet* pTouches, CCEvent* pEvent);
 	//adding hill
 	Terrain* terrain;
 

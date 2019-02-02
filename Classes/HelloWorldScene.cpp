@@ -30,11 +30,13 @@ bool HelloWorld::init()
 	visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 
 	_background = new CCSprite();
-
+	_stripes = new CCSprite();
+	terrain = Terrain::createTerrain();
+	this->addChild(terrain,1);
 	this->genBackground();
 	
-	terrain = Terrain::createTerrain();
-	this->addChild(terrain);
+	this->setTouchEnabled(true);
+
     return true;
 }
 
@@ -64,6 +66,18 @@ void HelloWorld::genBackground()
 	cocos2d::ccTexParams tp = { GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT };
 	_background->getTexture()->setTexParameters(&tp);
 	this->addChild(_background);
+
+	_stripes->removeFromParentAndCleanup(true);
+
+	ccColor4F color3 = this->randomBrightColor();
+	ccColor4F color4 = this->randomBrightColor();
+	_stripes = this->stripedSpriteWithColor(color3, color4, 512, 512, 4);
+	cocos2d::ccTexParams tp2 = { GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE };
+	_stripes->getTexture()->setTexParameters(&tp2);
+	_stripes->setPosition(ccp(visibleSize.width / 2, -visibleSize.height));
+
+	terrain->_stripes = _stripes;
+	this->addChild(_stripes);
 }
 
 ccColor4F HelloWorld::randomBrightColor()
@@ -131,14 +145,14 @@ CCSprite* HelloWorld::spriteWithColor(ccColor4F bgColor, float textureWidth, flo
 	return CCSprite::createWithTexture(rt->getSprite()->getTexture());
 }
 
-CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F bgColor, ccColor4F bgColor2, float textureWidth, float textureHeight,
+CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F color1, ccColor4F color2, float textureWidth, float textureHeight,
 	int nStripes)
 {
 	// 1. create render texture
 	CCRenderTexture* rt = CCRenderTexture::create(textureWidth, textureHeight);
 
 	// 2. begin render texture
-	rt->beginWithClear(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+	rt->beginWithClear(color1.r, color1.g, color1.b, color1.a);
 
 	// 3. draw
 
@@ -166,22 +180,22 @@ CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F bgColor, ccColor4F bgColo
 		x2 = x1 + textureHeight;
 
 		vertices[nVertices] = CCPointMake(x1, y1);
-		colors[nVertices++] = bgColor2;
+		colors[nVertices++] = color2;
 
 		vertices[nVertices] = CCPointMake(x1 + stripeWidth, y1);
 		colors[nVertices++] = ccColor4F(ccc4f(0, 0, 0, 0));
 
 		vertices[nVertices] = CCPointMake(x2, y2);
-		colors[nVertices++] = bgColor2;
+		colors[nVertices++] = color2;
 
 		vertices[nVertices] = vertices[nVertices - 2];
-		colors[nVertices++] = bgColor2;
+		colors[nVertices++] = color2;
 
 		vertices[nVertices] = vertices[nVertices - 2];
-		colors[nVertices++] = bgColor2;
+		colors[nVertices++] = color2;
 
 		vertices[nVertices] = CCPointMake(x2 + stripeWidth, y2);
-		colors[nVertices++] = bgColor2;
+		colors[nVertices++] = color2;
 
 		x1 += dx;
 	}
@@ -213,30 +227,36 @@ CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F bgColor, ccColor4F bgColo
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
 
 
-	// layer 4: highlight
-	float borderHeight = textureHeight / 16;
-	float borderAlpha = 0.3f;
-	nVertices = 0;
+	//// layer 4: highlight
+	//float borderHeight = textureHeight / 16;
+	//float borderAlpha = 0.3f;
+	//nVertices = 0;
 
-	vertices[nVertices] = CCPointMake(0, 0);
-	colors[nVertices++] = ccColor4F(ccc4f(1, 1, 1, borderAlpha));
+	//vertices[nVertices] = CCPointMake(0, 0);
+	//colors[nVertices++] = ccColor4F(ccc4f(1, 1, 1, borderAlpha));
 
-	vertices[nVertices] = CCPointMake(textureWidth, 0);
-	colors[nVertices++] = ccColor4F(ccc4f(1, 1, 1, borderAlpha));
+	//vertices[nVertices] = CCPointMake(textureWidth, 0);
+	//colors[nVertices++] = ccColor4F(ccc4f(1, 1, 1, borderAlpha));
 
-	vertices[nVertices] = CCPointMake(0, textureHeight);
-	colors[nVertices++] = ccColor4F(ccc4f(0, 0, 0, 0));
+	//vertices[nVertices] = CCPointMake(0, textureHeight);
+	//colors[nVertices++] = ccColor4F(ccc4f(0, 0, 0, 0));
 
-	vertices[nVertices] = CCPointMake(textureWidth, textureHeight);
-	colors[nVertices++] = ccColor4F(ccc4f(0, 0, 0, 0));
+	//vertices[nVertices] = CCPointMake(textureWidth, textureHeight);
+	//colors[nVertices++] = ccColor4F(ccc4f(0, 0, 0, 0));
 
-	glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, vertices);
-	glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_TRUE, 0, colors);
-	glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
+	//glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, vertices);
+	//glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_TRUE, 0, colors);
+	//glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
+	//glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
 
 	// 4. end render texture
 	rt->end();
+
 	// 5. create new sprite from the texture
 	return CCSprite::createWithTexture(rt->getSprite()->getTexture());
+}
+
+void HelloWorld::ccTouchesBegan(CCSet* pTouches, CCEvent* pEvent)
+{
+	this->genBackground();
 }
