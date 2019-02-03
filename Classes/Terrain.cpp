@@ -22,6 +22,43 @@ Terrain* Terrain::createTerrain()
 	return NULL;
 }
 
+Terrain* Terrain::createWithWorld(b2World* world)
+{
+	Terrain* obj = new Terrain();
+	if (obj && obj->initWithWorld(world))
+	{
+		obj->autorelease();
+		return obj;
+	}
+
+	CC_SAFE_DELETE(obj);
+	return NULL;
+}
+
+bool Terrain::initWithWorld(b2World* world)
+{
+	if (!CCNode::init())
+	{
+		return false;
+	}
+	
+	_world = world;
+	_body = NULL;
+	_fromKeyPointI = 0;
+	_toKeyPointI = 0;
+	_offsetX = 0;
+	_nHillVertices = 0;
+	_nBorderVertices = 0;
+
+	winSize = CCDirector::sharedDirector()->getWinSize();
+	this->setupDebugDraw();
+	this->generateHills();
+
+	this->setShaderProgram(CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTexture));
+	this->resetHillVertices();
+	return true;
+}
+
 void Terrain::setOffsetX(float newOffsetX)
 {
 	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
@@ -93,6 +130,7 @@ void Terrain::resetHillVertices()
 
 		prevFromKeyPointI = _fromKeyPointI;
 		prevToKeyPointI = _toKeyPointI;
+		this->resetBox2DBody();
 	}
 }
 
@@ -107,8 +145,36 @@ void Terrain::draw()
 	glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_TRUE, 0, _hillTexCoords);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)_nHillVertices);
+
+	_world->DrawDebugData();
 }
 
+
+void Terrain::resetBox2DBody(){
+	//falling on ground
+
+	if (_body) return;
+
+	CCPoint p0 = _hillKeyPoints[0];
+	CCPoint p1 = _hillKeyPoints[kMaxHillKeyPoints - 1];
+
+	b2BodyDef bd;
+	bd.position.Set(0, 0);
+	_body = _world->CreateBody(&bd);
+
+	b2EdgeShape shape;
+
+	float minY = 0;
+	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
+	if (winSize.height > 480) {
+		minY = (1136 - 1024) / 4;
+	}
+
+	b2Vec2 ep1 = b2Vec2(p0.x / PTM_RATIO, minY / PTM_RATIO);
+	b2Vec2 ep2 = b2Vec2(p1.x / PTM_RATIO, minY / PTM_RATIO);
+	shape.Set(ep1, ep2);
+	_body->CreateFixture(&shape, 0);
+}
 void Terrain::generateHills()
 {
 	//optimized generate
@@ -144,6 +210,14 @@ void Terrain::generateHills()
 		}
 		sign *= -1;
 	}
+}
+
+
+void Terrain::setupDebugDraw()
+{
+	_debugDraw = new GLESDebugDraw((float)PTM_RATIO);
+	_world->SetDebugDraw(_debugDraw);
+	_debugDraw->SetFlags(GLESDebugDraw::e_shapeBit | GLESDebugDraw::e_jointBit);
 }
 
 bool Terrain::init()

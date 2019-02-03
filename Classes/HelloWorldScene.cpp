@@ -30,12 +30,15 @@ bool HelloWorld::init()
 	visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 
 	_background = new CCSprite();
-	_stripes = new CCSprite();
-	terrain = Terrain::createTerrain();
+	_stripes = new CCSprite();	
+	this->setupWorld();
+	terrain = Terrain::createWithWorld(_world);
 	this->addChild(terrain,1);
 	this->genBackground();
 	
 	this->setTouchEnabled(true);
+
+	this->scheduleUpdate();
 
     return true;
 }
@@ -258,5 +261,57 @@ CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F color1, ccColor4F color2,
 
 void HelloWorld::ccTouchesBegan(CCSet* pTouches, CCEvent* pEvent)
 {
+	CCTouch* anyTouch = (CCTouch*) pTouches->anyObject();
+	CCPoint touchLocation = terrain->convertTouchToNodeSpace(anyTouch);
+	this->createTestBodyAtPostition(touchLocation);
+
 	this->genBackground();
+}
+
+void HelloWorld::setupWorld()
+{
+	b2Vec2 gravity = b2Vec2(0.0f, -7.0f);
+	bool doSleep = true;
+	_world = new b2World(gravity);
+	_world->SetAllowSleeping(doSleep);
+}
+
+void HelloWorld::createTestBodyAtPostition(CCPoint position)
+{
+
+	b2BodyDef testBodyDef;
+	testBodyDef.type = b2_dynamicBody;
+	testBodyDef.position.Set(position.x / PTM_RATIO, position.y / PTM_RATIO);
+	b2Body * testBody = _world->CreateBody(&testBodyDef);
+
+	b2CircleShape testBodyShape;
+	b2FixtureDef testFixtureDef;
+	testBodyShape.m_radius = 25.0 / PTM_RATIO;
+	testFixtureDef.shape = &testBodyShape;
+	testFixtureDef.density = 1.0;
+	testFixtureDef.friction = 0.2f;
+	testFixtureDef.restitution = 0.5;
+	testBody->CreateFixture(&testFixtureDef);
+
+}
+
+void HelloWorld::update(float delta)
+{
+	static double UPDATE_INTERVAL = 1.0f / 60.0f;
+	static double MAX_CYCLES_PER_FRAME = 5;
+	static double timeAccumulator = 0;
+
+	timeAccumulator += delta;
+	if (timeAccumulator > (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL)) {
+		timeAccumulator = UPDATE_INTERVAL;
+	}
+
+	int32 velocityIterations = 3;
+	int32 positionIterations = 2;
+	while (timeAccumulator >= UPDATE_INTERVAL) {
+		timeAccumulator -= UPDATE_INTERVAL;
+		_world->Step(UPDATE_INTERVAL, velocityIterations, positionIterations);
+		_world->ClearForces();
+	}
+
 }

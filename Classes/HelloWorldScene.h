@@ -3,6 +3,9 @@
 
 #include "cocos2d.h"
 #include "Terrain.h"
+#include "Box2D/Box2D.h"
+#define PTM_RATIO 32.0
+
 USING_NS_CC;
 class HelloWorld : public cocos2d::CCLayer
 {
@@ -30,6 +33,10 @@ public:
 	//adding hill
 	Terrain* terrain;
 
+	b2World * _world;
+	void setupWorld();
+	void createTestBodyAtPostition(CCPoint position);
+	void update(float delta);
 };
 
 #endif // __HELLOWORLD_SCENE_H__
