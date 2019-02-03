@@ -28,7 +28,8 @@ bool HelloWorld::init()
     }
     
 	visibleSize = CCDirector::sharedDirector()->getVisibleSize();
-
+	
+	_tapDown = true;
 	_background = new CCSprite();
 	_stripes = new CCSprite();	
 	this->setupWorld();
@@ -283,7 +284,7 @@ void HelloWorld::createTestBodyAtPostition(CCPoint position)
 void HelloWorld::update(float delta)
 {
 	if (_tapDown) {
-		if (!_hero->awake) {
+		if (!_hero->_awake) {
 			_hero->wake();
 			_tapDown = false;
 		}

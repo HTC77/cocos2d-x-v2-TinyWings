@@ -5,6 +5,7 @@
 
 #include "cocos2d.h"
 #include <Box2D\Box2D.h>
+#define NUM_PREV_VELS 5
 
 USING_NS_CC;
 
@@ -23,11 +24,12 @@ public:
 
 	bool _awake;
 
-	bool awake;
 	void wake();
 	void dive();
 	void limitVelocity();
 
+	b2Vec2 _prevVels[NUM_PREV_VELS];
+	int _nextVel;
 };
 
 #endif

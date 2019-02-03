@@ -26,8 +26,9 @@ bool Hero::initWithWorld(b2World* world)
 {
 	if (this->initWithSpriteFrameName("seal1.png")) {
 		_world = world;
-		this->createBody();
 		_awake = false;
+		_nextVel = 0;
+		this->createBody();
 		return true;
 	}
 	return false;
@@ -38,6 +39,14 @@ void Hero::update()
 	this->setPosition(ccp(_body->GetPosition().x*PTM_RATIO, _body->GetPosition().y*PTM_RATIO));
 	b2Vec2 vel = _body->GetLinearVelocity();
 	b2Vec2 weightedVel = vel;
+	
+	for (int i = 0; i < NUM_PREV_VELS; ++i) {
+		weightedVel += _prevVels[i];
+	}
+	weightedVel = b2Vec2(weightedVel.x / NUM_PREV_VELS, weightedVel.y / NUM_PREV_VELS);
+	_prevVels[_nextVel++] = vel;
+	if (_nextVel >= NUM_PREV_VELS) _nextVel = 0;
+	
 	float angle = ccpToAngle(ccp(weightedVel.x, weightedVel.y));
 	if (_awake) {
 		this->setRotation(-1 * CC_RADIANS_TO_DEGREES(angle));
@@ -74,7 +83,7 @@ void Hero::createBody()
 
 void Hero::wake()
 {
-	awake = true;
+	_awake = true;
 	_body->SetActive(true);
 	_body->ApplyLinearImpulse(b2Vec2(1, 2), _body->GetPosition());
 }
@@ -86,7 +95,7 @@ void Hero::dive()
 
 void Hero::limitVelocity()
 {
-	if (!awake) return;
+	if (!_awake) return;
 
 	const float minVelocityX = 10;
 	const float minVelocityY = -40;
