@@ -153,27 +153,22 @@ void Terrain::draw()
 void Terrain::resetBox2DBody(){
 	//falling on ground
 
-	if (_body) return;
-
-	CCPoint p0 = _hillKeyPoints[0];
-	CCPoint p1 = _hillKeyPoints[kMaxHillKeyPoints - 1];
+	if (_body) _world->DestroyBody(_body);;
 
 	b2BodyDef bd;
 	bd.position.Set(0, 0);
+	
 	_body = _world->CreateBody(&bd);
 
 	b2EdgeShape shape;
 
-	float minY = 0;
-	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
-	if (winSize.height > 480) {
-		minY = (1136 - 1024) / 4;
+	b2Vec2 p1, p2;
+	for (int i = 0; i<_nBorderVertices - 1; i++) {
+		p1 = b2Vec2(_borderVertices[i].x / PTM_RATIO, _borderVertices[i].y / PTM_RATIO);
+		p2 = b2Vec2(_borderVertices[i + 1].x / PTM_RATIO, _borderVertices[i + 1].y / PTM_RATIO);
+		shape.Set(p1, p2);
+		_body->CreateFixture(&shape, 0);
 	}
-
-	b2Vec2 ep1 = b2Vec2(p0.x / PTM_RATIO, minY / PTM_RATIO);
-	b2Vec2 ep2 = b2Vec2(p1.x / PTM_RATIO, minY / PTM_RATIO);
-	shape.Set(ep1, ep2);
-	_body->CreateFixture(&shape, 0);
 }
 void Terrain::generateHills()
 {
