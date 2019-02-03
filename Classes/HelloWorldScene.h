@@ -32,6 +32,8 @@ public:
 	CCSprite* stripedSpriteWithColor(ccColor4F color1, ccColor4F color2, float textureWidth, float textureHeight, int nStripes);
 
 	void ccTouchesBegan(CCSet* pTouches, CCEvent* pEvent);
+	void ccTouchesEnded(CCSet* pTouches, CCEvent* pEvent);
+	void ccTouchesCancelled(CCSet* pTouches, CCEvent* pEvent);
 	//adding hill
 	Terrain* _terrain;
 
@@ -41,6 +43,8 @@ public:
 	void update(float delta);
 
 	Hero * _hero;
+	
+	bool _tapDown;
 
 };
 

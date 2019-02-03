@@ -22,7 +22,12 @@ public:
 	b2Body *_body;
 
 	bool _awake;
-	
+
+	bool awake;
+	void wake();
+	void dive();
+	void limitVelocity();
+
 };
 
 #endif

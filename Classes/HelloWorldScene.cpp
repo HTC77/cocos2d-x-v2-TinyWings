@@ -239,11 +239,18 @@ CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F color1, ccColor4F color2,
 
 void HelloWorld::ccTouchesBegan(CCSet* pTouches, CCEvent* pEvent)
 {
-	CCTouch* anyTouch = (CCTouch*) pTouches->anyObject();
-	CCPoint touchLocation = _terrain->convertTouchToNodeSpace(anyTouch);
-	this->createTestBodyAtPostition(touchLocation);
-
+	_tapDown = true;
 	this->genBackground();
+}
+
+void HelloWorld::ccTouchesEnded(CCSet* pTouches, CCEvent* pEvent)
+{
+	_tapDown = false;
+}
+
+void HelloWorld::ccTouchesCancelled(CCSet* pTouches, CCEvent* pEvent)
+{
+	_tapDown = false;
 }
 
 void HelloWorld::setupWorld()
@@ -275,6 +282,18 @@ void HelloWorld::createTestBodyAtPostition(CCPoint position)
 
 void HelloWorld::update(float delta)
 {
+	if (_tapDown) {
+		if (!_hero->awake) {
+			_hero->wake();
+			_tapDown = false;
+		}
+		else {
+			_hero->dive();
+		}
+	}
+	
+	_hero->limitVelocity();
+
 	static double UPDATE_INTERVAL = 1.0f / 60.0f;
 	static double MAX_CYCLES_PER_FRAME = 5;
 	static double timeAccumulator = 0;

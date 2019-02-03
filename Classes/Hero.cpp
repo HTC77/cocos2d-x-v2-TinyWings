@@ -71,3 +71,31 @@ void Hero::createBody()
 	_body->CreateFixture(&fd);
 
 }
+
+void Hero::wake()
+{
+	awake = true;
+	_body->SetActive(true);
+	_body->ApplyLinearImpulse(b2Vec2(1, 2), _body->GetPosition());
+}
+
+void Hero::dive()
+{
+	_body->ApplyForce(b2Vec2(5, -50), _body->GetPosition());
+}
+
+void Hero::limitVelocity()
+{
+	if (!awake) return;
+
+	const float minVelocityX = 10;
+	const float minVelocityY = -40;
+	b2Vec2 vel = _body->GetLinearVelocity();
+	if (vel.x < minVelocityX) {
+		vel.x = minVelocityX;
+	}
+	if (vel.y < minVelocityY) {
+		vel.y = minVelocityY;
+	}
+	_body->SetLinearVelocity(vel);
+}
