@@ -41,26 +41,20 @@ bool Terrain::initWithWorld(b2World* world)
 	{
 		return false;
 	}
-	
+	winSize = CCDirector::sharedDirector()->getWinSize();
 	_world = world;
-	_body = NULL;
 	_fromKeyPointI = 0;
 	_toKeyPointI = 0;
 	_offsetX = 0;
 	_nHillVertices = 0;
 	_nBorderVertices = 0;
-
-	winSize = CCDirector::sharedDirector()->getWinSize();
 	this->setupDebugDraw();
 	this->generateHills();
-
 	this->setShaderProgram(CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTexture));
 	this->resetHillVertices();
-	
 	_batchNode = CCSpriteBatchNode::create("TinySeal.png");
 	this->addChild(_batchNode);
 	CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("TinySeal.plist");
-	
 	return true;
 }
 
@@ -151,14 +145,12 @@ void Terrain::draw()
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)_nHillVertices);
 
-	_world->DrawDebugData();
+	//_world->DrawDebugData();
 }
 
 
 void Terrain::resetBox2DBody(){
 	//falling on ground
-
-	if (_body) _world->DestroyBody(_body);;
 
 	b2BodyDef bd;
 	bd.position.Set(0, 0);
@@ -177,6 +169,8 @@ void Terrain::resetBox2DBody(){
 }
 void Terrain::generateHills()
 {
+	this->setShaderProgram(CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTexture));
+
 	//optimized generate
 	float minDX = 160;
 	float minDY = 60;

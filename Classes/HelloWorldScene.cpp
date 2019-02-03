@@ -313,6 +313,10 @@ void HelloWorld::update(float delta)
 	}
 
 	_hero->update();
+	float scale = (visibleSize.height * 3 / 4) / _hero->getPositionY();
+	if (scale > 1) scale = 1;
+	_terrain->setScale(scale);
+
 	float offset = _hero->getPositionX();
 	CCSize textureSize = _background->getTextureRect().size;
 	_background->setTextureRect(CCRectMake(offset, 0, textureSize.width, textureSize.height));
