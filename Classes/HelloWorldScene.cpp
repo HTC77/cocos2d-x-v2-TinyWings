@@ -31,7 +31,9 @@ bool HelloWorld::init()
 	
 	_tapDown = true;
 	_background = new CCSprite();
-	_stripes = new CCSprite();	
+	_stripes = new CCSprite();
+	isnodive = false;
+
 	this->setupWorld();
 	_terrain = Terrain::createWithWorld(_world);
 	this->addChild(_terrain,1);
@@ -242,6 +244,8 @@ void HelloWorld::ccTouchesBegan(CCSet* pTouches, CCEvent* pEvent)
 {
 	_tapDown = true;
 	this->genBackground();
+	_hero->runForceAnimation();
+	isnodive = false;
 }
 
 void HelloWorld::ccTouchesEnded(CCSet* pTouches, CCEvent* pEvent)
@@ -292,6 +296,14 @@ void HelloWorld::update(float delta)
 			_hero->dive();
 		}
 	}
+	else
+	{
+		if (!isnodive){
+			isnodive = true;
+			_hero->nodive();
+		}
+	}
+
 	
 	_hero->limitVelocity();
 

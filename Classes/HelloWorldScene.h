@@ -18,7 +18,7 @@ public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::CCScene* scene();
 	CCSize visibleSize;
-    // a selector callback
+	// a selector callback
     void menuCloseCallback(CCObject* pSender);
     
     // implement the "static node()" method manually
@@ -45,6 +45,7 @@ public:
 	Hero * _hero;
 	
 	bool _tapDown;
+	bool isnodive;
 
 };
 

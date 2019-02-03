@@ -30,6 +30,13 @@ public:
 
 	b2Vec2 _prevVels[NUM_PREV_VELS];
 	int _nextVel;
+
+	CCAnimation* _normalAnim;
+	CCAction* _normalAnimate;
+	void nodive();
+	void runForceAnimation();
+	void runNormalAnimation();
+
 };
 
 #endif

@@ -29,6 +29,14 @@ bool Hero::initWithWorld(b2World* world)
 		_awake = false;
 		_nextVel = 0;
 		this->createBody();
+
+		_normalAnim = CCAnimation::create();
+		_normalAnim->addSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("seal1.png"));
+		_normalAnim->addSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("seal2.png"));
+		_normalAnim->setDelayPerUnit(0.25);
+		_normalAnimate = CCRepeatForever::create(CCAnimate::create(_normalAnim));
+		_normalAnimate->retain();
+
 		return true;
 	}
 	return false;
@@ -107,4 +115,20 @@ void Hero::limitVelocity()
 		vel.y = minVelocityY;
 	}
 	_body->SetLinearVelocity(vel);
+}
+
+void Hero::nodive()
+{
+	this->runNormalAnimation();
+}
+
+void Hero::runForceAnimation()
+{
+	this->stopAllActions();
+	this->setDisplayFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("seal_downhill.png"));
+}
+
+void Hero::runNormalAnimation()
+{
+	this->runAction(_normalAnimate);
 }
