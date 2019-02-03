@@ -133,7 +133,7 @@ CCSprite* HelloWorld::spriteWithColor(ccColor4F bgColor, float textureWidth, flo
 
 	ccGLEnableVertexAttribs(kCCVertexAttribFlag_Position | kCCVertexAttribFlag_Color);
 	glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, vertices);
-	glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, FALSE, 0, colors);
+	glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_FALSE, 0, colors);
 	glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
 
@@ -230,7 +230,7 @@ CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F color1, ccColor4F color2,
 
 	ccGLEnableVertexAttribs(kCCVertexAttribFlag_Position | kCCVertexAttribFlag_Color);
 	glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, vertices);
-	glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, FALSE, 0, colors);
+	glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_FALSE, 0, colors);
 	glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
 
