@@ -1,5 +1,5 @@
 #include "HelloWorldScene.h"
-
+#include "SimpleAudioEngine.h"
 USING_NS_CC;
 
 CCScene* HelloWorld::scene()
@@ -44,6 +44,7 @@ bool HelloWorld::init()
 
 	_hero = Hero::createWithWorld(_world);
 	_terrain->_batchNode->addChild(_hero);
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("TinySeal.mp3",true);
     return true;
 }
 

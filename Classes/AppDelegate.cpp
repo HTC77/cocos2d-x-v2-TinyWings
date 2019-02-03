@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -29,7 +30,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // run
     pDirector->runWithScene(pScene);
-
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("TinySeal.mp3");
     return true;
 }
 
