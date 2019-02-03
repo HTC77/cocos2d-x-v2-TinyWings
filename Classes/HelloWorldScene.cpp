@@ -32,13 +32,15 @@ bool HelloWorld::init()
 	_background = new CCSprite();
 	_stripes = new CCSprite();	
 	this->setupWorld();
-	terrain = Terrain::createWithWorld(_world);
-	this->addChild(terrain,1);
+	_terrain = Terrain::createWithWorld(_world);
+	this->addChild(_terrain,1);
 	this->genBackground();
 	
 	this->setTouchEnabled(true);
-
 	this->scheduleUpdate();
+
+	_hero = Hero::createWithWorld(_world);
+	_terrain->_batchNode->addChild(_hero);
     return true;
 }
 
@@ -78,7 +80,7 @@ void HelloWorld::genBackground()
 	_stripes->getTexture()->setTexParameters(&tp2);
 	_stripes->setPosition(ccp(visibleSize.width / 2, -visibleSize.height));
 
-	terrain->_stripes = _stripes;
+	_terrain->_stripes = _stripes;
 	this->addChild(_stripes);
 }
 
@@ -228,29 +230,6 @@ CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F color1, ccColor4F color2,
 	glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
 
-
-	//// layer 4: highlight
-	//float borderHeight = textureHeight / 16;
-	//float borderAlpha = 0.3f;
-	//nVertices = 0;
-
-	//vertices[nVertices] = CCPointMake(0, 0);
-	//colors[nVertices++] = ccColor4F(ccc4f(1, 1, 1, borderAlpha));
-
-	//vertices[nVertices] = CCPointMake(textureWidth, 0);
-	//colors[nVertices++] = ccColor4F(ccc4f(1, 1, 1, borderAlpha));
-
-	//vertices[nVertices] = CCPointMake(0, textureHeight);
-	//colors[nVertices++] = ccColor4F(ccc4f(0, 0, 0, 0));
-
-	//vertices[nVertices] = CCPointMake(textureWidth, textureHeight);
-	//colors[nVertices++] = ccColor4F(ccc4f(0, 0, 0, 0));
-
-	//glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, vertices);
-	//glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_TRUE, 0, colors);
-	//glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
-	//glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
-
 	// 4. end render texture
 	rt->end();
 
@@ -261,7 +240,7 @@ CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F color1, ccColor4F color2,
 void HelloWorld::ccTouchesBegan(CCSet* pTouches, CCEvent* pEvent)
 {
 	CCTouch* anyTouch = (CCTouch*) pTouches->anyObject();
-	CCPoint touchLocation = terrain->convertTouchToNodeSpace(anyTouch);
+	CCPoint touchLocation = _terrain->convertTouchToNodeSpace(anyTouch);
 	this->createTestBodyAtPostition(touchLocation);
 
 	this->genBackground();
@@ -313,10 +292,9 @@ void HelloWorld::update(float delta)
 		_world->ClearForces();
 	}
 
-	float PIXELS_PER_SECOND = 100;
-	static float offset = 0;
-	offset += PIXELS_PER_SECOND * delta;
+	_hero->update();
+	float offset = _hero->getPositionX();
 	CCSize textureSize = _background->getTextureRect().size;
 	_background->setTextureRect(CCRectMake(offset, 0, textureSize.width, textureSize.height));
-	terrain->setOffsetX(offset);
+	_terrain->setOffsetX(offset);
 }

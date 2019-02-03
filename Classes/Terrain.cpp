@@ -56,6 +56,11 @@ bool Terrain::initWithWorld(b2World* world)
 
 	this->setShaderProgram(CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTexture));
 	this->resetHillVertices();
+	
+	_batchNode = CCSpriteBatchNode::create("TinySeal.png");
+	this->addChild(_batchNode);
+	CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("TinySeal.plist");
+	
 	return true;
 }
 

@@ -4,6 +4,8 @@
 #include "cocos2d.h"
 #include "Terrain.h"
 #include "Box2D/Box2D.h"
+#include "Hero.h"
+
 #define PTM_RATIO 32.0
 
 USING_NS_CC;
@@ -31,12 +33,15 @@ public:
 
 	void ccTouchesBegan(CCSet* pTouches, CCEvent* pEvent);
 	//adding hill
-	Terrain* terrain;
+	Terrain* _terrain;
 
 	b2World * _world;
 	void setupWorld();
 	void createTestBodyAtPostition(CCPoint position);
 	void update(float delta);
+
+	Hero * _hero;
+
 };
 
 #endif // __HELLOWORLD_SCENE_H__
