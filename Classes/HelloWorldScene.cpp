@@ -39,7 +39,6 @@ bool HelloWorld::init()
 	this->setTouchEnabled(true);
 
 	this->scheduleUpdate();
-
     return true;
 }
 
@@ -314,4 +313,10 @@ void HelloWorld::update(float delta)
 		_world->ClearForces();
 	}
 
+	float PIXELS_PER_SECOND = 100;
+	static float offset = 0;
+	offset += PIXELS_PER_SECOND * delta;
+	CCSize textureSize = _background->getTextureRect().size;
+	_background->setTextureRect(CCRectMake(offset, 0, textureSize.width, textureSize.height));
+	terrain->setOffsetX(offset);
 }

@@ -63,7 +63,7 @@ void Terrain::setOffsetX(float newOffsetX)
 {
 	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
 	_offsetX = newOffsetX;
-	this->setPosition(CCPointMake(winSize.width / 8 - _offsetX * this->getScale(), 0));
+	this->setPosition(CCPointMake(winSize.width / 12 - _offsetX * this->getScale(), 0));
 	this->resetHillVertices();
 }
 
