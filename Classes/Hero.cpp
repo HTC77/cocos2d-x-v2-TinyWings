@@ -1,5 +1,5 @@
 #include "Hero.h"
-#include "HelloWorldScene.h"
+#define PTM_RATIO 32.0
 
 Hero::Hero()
 {
@@ -86,7 +86,6 @@ void Hero::createBody()
 	fd.friction = 0.2;
 
 	_body->CreateFixture(&fd);
-
 }
 
 void Hero::wake()

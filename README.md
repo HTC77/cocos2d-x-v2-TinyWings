@@ -1,7 +1,3 @@
 <h1>cocos2d-x project<h1>
-<br>
-  <div><h3>a cocos2d-x project like Tiny Wings</h3> </div>
-  <br> <hr>
-  <div><h6>by <a href="mailto:a77sabeghi@gmail.com">HTC<a/><h6></div>
-    <hr>
-<img src="Screenshot.png" align="center">
+
+<img style="margin:auto" src="Screenshot.png" align="center">
