@@ -27,7 +27,7 @@ bool HelloWorld::init()
         return false;
     }
     
-	visibleSize = CCDirector::sharedDirector()->getVisibleSize();
+	visibleSize = CCDirector::sharedDirector()->getWinSize();
 	
 	_tapDown = true;
 	_background = new CCSprite();
@@ -45,6 +45,23 @@ bool HelloWorld::init()
 	_hero = Hero::createWithWorld(_world);
 	_terrain->_batchNode->addChild(_hero);
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("TinySeal.mp3",true);
+
+	// add a "close" icon to exit the progress. it's an autorelease object
+	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
+	CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
+		"CloseNormal.png",
+		"CloseSelected.png",
+		this,
+		menu_selector(HelloWorld::menuCloseCallback));
+
+	pCloseItem->setPosition(ccp(origin.x + visibleSize.width - pCloseItem->getContentSize().width / 2,
+		origin.y + pCloseItem->getContentSize().height / 2));
+
+	// create menu, it's an autorelease object
+	CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
+	pMenu->setPosition(CCPointZero);
+	this->addChild(pMenu, 1);
+
     return true;
 }
 
@@ -67,7 +84,6 @@ void HelloWorld::genBackground()
 
 	ccColor4F bgColor = this->randomBrightColor();
 
-	int stripes = (rand() % 4 + 1) * 2;
 	_background = this->spriteWithColor(bgColor, 512, 512);
 	_background->setPosition(visibleSize / 2);
 
@@ -215,25 +231,6 @@ CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F color1, ccColor4F color2,
 	glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_TRUE, 0, colors);
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
 
-	// layer 3: gradiant alpha
-	float gradiantAlpha = 0.7f;
-	nVertices = 0;
-
-	vertices[nVertices] = CCPointMake(0, 0);
-	colors[nVertices++] = ccColor4F(ccc4f(0, 0, 0, 0));
-	vertices[nVertices] = CCPointMake(textureWidth, 0);
-	colors[nVertices++] = ccColor4F(ccc4f(0, 0, 0, 0));
-	vertices[nVertices] = CCPointMake(0, textureHeight);
-	colors[nVertices++] = ccColor4F(ccc4f(0, 0, 0, gradiantAlpha));
-	vertices[nVertices] = CCPointMake(textureWidth, textureHeight);
-	colors[nVertices++] = ccColor4F(ccc4f(0, 0, 0, gradiantAlpha));
-
-	ccGLEnableVertexAttribs(kCCVertexAttribFlag_Position | kCCVertexAttribFlag_Color);
-	glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, vertices);
-	glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_FLOAT, GL_FALSE, 0, colors);
-	glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
-
 	// 4. end render texture
 	rt->end();
 
@@ -243,8 +240,8 @@ CCSprite* HelloWorld::stripedSpriteWithColor(ccColor4F color1, ccColor4F color2,
 
 void HelloWorld::ccTouchesBegan(CCSet* pTouches, CCEvent* pEvent)
 {
-	_tapDown = true;
 	this->genBackground();
+	_tapDown = true;
 	_hero->runForceAnimation();
 	isnodive = false;
 }
@@ -332,6 +329,6 @@ void HelloWorld::update(float delta)
 
 	float offset = _hero->getPositionX();
 	CCSize textureSize = _background->getTextureRect().size;
-	_background->setTextureRect(CCRectMake(offset, 0, textureSize.width, textureSize.height));
+	_background->setTextureRect(CCRectMake(offset * 0.7, 0, textureSize.width, textureSize.height));
 	_terrain->setOffsetX(offset);
 }

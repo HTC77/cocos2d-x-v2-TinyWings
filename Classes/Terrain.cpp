@@ -60,9 +60,8 @@ bool Terrain::initWithWorld(b2World* world)
 
 void Terrain::setOffsetX(float newOffsetX)
 {
-	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
 	_offsetX = newOffsetX;
-	this->setPosition(CCPointMake(winSize.width / 12 - _offsetX * this->getScale(), 0));
+	this->setPosition(CCPointMake(winSize.width / 8 - _offsetX * this->getScale(), 0));
 	this->resetHillVertices();
 }
 
@@ -136,6 +135,7 @@ void Terrain::resetHillVertices()
 void Terrain::draw()
 {
 	CC_NODE_DRAW_SETUP();
+
 	ccGLBindTexture2D(_stripes->getTexture()->getName());
 	ccGLEnableVertexAttribs(kCCVertexAttribFlag_Position | kCCVertexAttribFlag_TexCoords);
 
@@ -144,8 +144,6 @@ void Terrain::draw()
 	glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_TRUE, 0, _hillTexCoords);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)_nHillVertices);
-
-	//_world->DrawDebugData();
 }
 
 

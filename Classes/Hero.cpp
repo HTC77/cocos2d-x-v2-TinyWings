@@ -86,7 +86,6 @@ void Hero::createBody()
 	fd.friction = 0.2;
 
 	_body->CreateFixture(&fd);
-
 }
 
 void Hero::wake()
