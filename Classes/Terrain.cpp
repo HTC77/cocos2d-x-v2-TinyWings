@@ -194,9 +194,11 @@ void Terrain::generateHills()
 			while (true) {
 				dy = rand() % rangeDY + minDY;
 				ny = y + dy*sign;
-				if (ny < winSize.height - paddingTop && ny > paddingBottom) {
+				if ((sign < 0 && (ny + minDY) >(winSize.height - paddingTop))
+					|| (sign > 0 && (ny - minDY) < paddingBottom))
+					continue;
+				if (ny < winSize.height - paddingTop && ny > paddingBottom)
 					break;
-				}
 			}
 			y = ny;
 		}
